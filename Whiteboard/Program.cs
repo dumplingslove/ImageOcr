@@ -14,7 +14,14 @@ namespace Whiteboard
     {
         static void Main(string[] args)
         {
-            foreach (var file in Directory.GetFiles(@"D:\workspace\ocr\data", "*.input.jpg"))
+            var directory = Directory.GetCurrentDirectory();
+            while (!Directory.Exists(Path.Combine(directory, "demo")))
+            {
+                directory = Path.Combine(directory, "..");
+                if (!Directory.Exists(directory)) throw new DirectoryNotFoundException("cannot find demo directory");
+            }
+
+            foreach (var file in Directory.GetFiles(Path.Combine(directory, "demo"), "*.input.jpg"))
             {
                 Process2(file);
             }
@@ -23,7 +30,7 @@ namespace Whiteboard
 
         static void Process(string fileName)
         {
-            var mapping = new byte[] 
+            var mapping = new byte[]
             {
                 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 9, 9,
                 10, 10, 11, 11, 12, 12, 13, 13, 14, 15, 15, 16, 17, 17, 18, 19, 19, 20, 21, 22, 23, 23, 24, 25, 26, 27, 28, 29, 30,
@@ -70,10 +77,10 @@ namespace Whiteboard
                 var thumbnail = new ResizeBicubic(width, height).Apply(gray);
                 thumbnail.ToManagedImage().Save(fileName + ".resize.png", System.Drawing.Imaging.ImageFormat.Png);
 
-                var filters = new FiltersSequence(/*new BilateralSmoothing { KernelSize = 7 }, */new BradleyLocalThresholding { WindowSize = 11, PixelBrightnessDifferenceLimit = 0.05f }, new Invert(), new BlobsFiltering(2, 2, max/4, max/4));
+                var filters = new FiltersSequence(new BradleyLocalThresholding { WindowSize = 11, PixelBrightnessDifferenceLimit = 0.05f }, new Invert(), new BlobsFiltering(2, 2, max / 4, max / 4));
                 thumbnail = filters.Apply(thumbnail);
 
-                
+
 
                 //var qf = new QuadrilateralFinder();
                 //var points = qf.ProcessImage(gray);
@@ -89,7 +96,7 @@ namespace Whiteboard
                 thumbnail.ToManagedImage().Save(fileName + ".skeleton.png", System.Drawing.Imaging.ImageFormat.Png);
 
                 var statistics = new ImageStatistics(gray);
-                
+
                 var whiteTarget = (int)(statistics.Gray.TotalCount * 0.3);
                 var blackTarget = (int)(statistics.Gray.TotalCount * 0.01);
 
@@ -152,18 +159,52 @@ namespace Whiteboard
             using (var bmp = new Bitmap(img))
             {
                 var umbmp = UnmanagedImage.FromManagedImage(bmp);
-                var gray = Grayscale.CommonAlgorithms.BT709.Apply(umbmp);
+
+                var gray = new FiltersSequence(Grayscale.CommonAlgorithms.BT709, new GaussianSharpen(), new ContrastCorrection(20))
+                    .Apply(umbmp);
+
                 gray.ToManagedImage().Save(fileName + ".gray.png", System.Drawing.Imaging.ImageFormat.Png);
 
-                var max = (gray.Width + gray.Height) / 2 / 2;
-                var filters = new FiltersSequence(new BilateralSmoothing { KernelSize = 7 }, new BradleyLocalThresholding { PixelBrightnessDifferenceLimit = 0.10f }, new Invert(), new BlobsFiltering(3, 3, max, max) { CoupledSizeFiltering = true });
-                var bw = filters.Apply(gray);
+                var bw = new FiltersSequence(new BradleyLocalThresholding { PixelBrightnessDifferenceLimit = 0.20f }, new Invert(), new Dilation(), new BlobsFiltering(5, 5, gray.Width / 2, gray.Height / 2, false))
+                    .Apply(gray);
                 bw.ToManagedImage().Save(fileName + ".bw.png", System.Drawing.Imaging.ImageFormat.Png);
 
-                filters = new FiltersSequence(new Invert(), new Intersect(bw), new Invert());
-                gray = filters.Apply(gray);
+                List<int> width = new List<int>();
+                List<int> height = new List<int>();
+                foreach (Rectangle rect in new BlobCounter(bw).GetObjectsRectangles())
+                {
+                    width.Add(rect.Width);
+                    height.Add(rect.Height);
+                }
 
+                width.Sort();
+                height.Sort();
+
+                var medianWidth = width[width.Count / 2];
+                var medianHeight = height[height.Count / 2];
+                Console.WriteLine($"Median: {medianWidth}, {medianHeight}");
+
+                
+                gray = new FiltersSequence(new Invert(), new Intersect(bw), new Invert())
+                    .Apply(gray);
                 gray.ToManagedImage().Save(fileName + ".filtered.png", System.Drawing.Imaging.ImageFormat.Png);
+                
+                bw = new FiltersSequence(new HorizontalRunLengthSmoothing(medianWidth * 2), new VerticalRunLengthSmoothing(medianHeight * 2))
+                    .Apply(bw);
+                bw.ToManagedImage().Save(fileName + ".area.png", System.Drawing.Imaging.ImageFormat.Png);
+
+                foreach (Rectangle rect in new BlobCounter(bw).GetObjectsRectangles()) Drawing.FillRectangle(bw, rect, Color.White);
+                bw.ToManagedImage().Save(fileName + ".rect.png", System.Drawing.Imaging.ImageFormat.Png);
+
+                var rgb = new GrayscaleToRGB().Apply(gray);
+
+                var padding = (medianWidth + medianHeight) / 2 / 2;
+                foreach (Rectangle rect in new BlobCounter(bw).GetObjectsRectangles())
+                {
+                    Drawing.Rectangle(rgb, rect, Color.Red);
+                }
+
+                rgb.ToManagedImage().Save(fileName + ".marked.png", System.Drawing.Imaging.ImageFormat.Png);
 
             }
 
