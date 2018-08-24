@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whiteboard", "Whiteboard\Whiteboard.csproj", "{534EBB27-3766-49B1-82FE-0FF2A063B6A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mathpix.Demo", "Mathpix.Demo\Mathpix.Demo.csproj", "{6ADA9C35-3913-429B-9823-5AC7EDE5BA6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mathpix.Client", "Mathpix.Client\Mathpix.Client.csproj", "{45DFA704-CE36-4D9E-8C16-DF82F51742B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{534EBB27-3766-49B1-82FE-0FF2A063B6A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{534EBB27-3766-49B1-82FE-0FF2A063B6A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{534EBB27-3766-49B1-82FE-0FF2A063B6A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ADA9C35-3913-429B-9823-5AC7EDE5BA6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ADA9C35-3913-429B-9823-5AC7EDE5BA6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ADA9C35-3913-429B-9823-5AC7EDE5BA6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ADA9C35-3913-429B-9823-5AC7EDE5BA6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45DFA704-CE36-4D9E-8C16-DF82F51742B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45DFA704-CE36-4D9E-8C16-DF82F51742B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45DFA704-CE36-4D9E-8C16-DF82F51742B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45DFA704-CE36-4D9E-8C16-DF82F51742B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
