@@ -18,6 +18,7 @@ namespace OCR.Shared
 
     public class Blob
     {
+        public int Id { get; set; }
         public byte[] Data { get; set; }
         public Rect Position { get; set; }
         public Point GravityCenter { get; set; }
