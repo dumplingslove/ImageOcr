@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whiteboard", "Whiteboard\Whiteboard.csproj", "{534EBB27-3766-49B1-82FE-0FF2A063B6A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR", "OCR\OCR.csproj", "{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{534EBB27-3766-49B1-82FE-0FF2A063B6A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{534EBB27-3766-49B1-82FE-0FF2A063B6A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{534EBB27-3766-49B1-82FE-0FF2A063B6A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
