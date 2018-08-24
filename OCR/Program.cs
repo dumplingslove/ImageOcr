@@ -19,13 +19,19 @@ namespace OCR
                 if (!Directory.Exists(directory)) throw new DirectoryNotFoundException("cannot find Picture directory");
             }
 
-            var imageName = "Math1.png";
+            //var imageName = "Math1.png";
             //var imageName = "Geometry1.jpg";
             //var imageName = "Chinese.jpg";
             //var imageName = "PrintWithHandWriting.jpg";
+            var imageName = "4.input.jpg.filtered.png";
 
             var inputPath = Path.Combine(directory, "Picture", imageName);
-            var outputPath = Path.Combine(directory, "Output", "OCR_V1_" + imageName + ".txt");
+            var outputFolder = Path.Combine(directory, "Output");
+            var outputPath = Path.Combine(outputFolder, "OCR_V1_" + imageName + ".txt");
+            var imageFolder = Path.Combine(directory, "Equation");
+
+            Directory.CreateDirectory(outputFolder);
+            Directory.CreateDirectory(imageFolder);
 
             var image = Image.FromFile(inputPath);
 
@@ -35,7 +41,9 @@ namespace OCR
             var googleOcr = new GoogleOcr();
             googleOcr.QuestionOcr(image, out pageWordList, out pageEquationList);
 
-            Utility.OutputResultToFile(outputPath, pageWordList, pageEquationList);
+            var rawResults = Utility.CombineRawOcrResult(pageWordList, pageEquationList);
+            Utility.OutputResultToFile(outputPath, rawResults);
+            Utility.OutputEquationsToImage(imageFolder, inputPath, rawResults);
         }
     }
 }
