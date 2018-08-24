@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mathpix.Client", "Mathpix.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR", "OCR\OCR.csproj", "{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquationExtraction", "EquationExtraction\EquationExtraction.csproj", "{3506A00C-86D1-4CC8-8483-0A2CC45966AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR.Shared", "OCR.Shared\OCR.Shared.csproj", "{A5146093-633D-4897-96D6-7E5EAC39BDF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{487B5A1C-DA4A-465B-8AB0-E55C4C5132D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3506A00C-86D1-4CC8-8483-0A2CC45966AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3506A00C-86D1-4CC8-8483-0A2CC45966AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3506A00C-86D1-4CC8-8483-0A2CC45966AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3506A00C-86D1-4CC8-8483-0A2CC45966AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5146093-633D-4897-96D6-7E5EAC39BDF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5146093-633D-4897-96D6-7E5EAC39BDF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5146093-633D-4897-96D6-7E5EAC39BDF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5146093-633D-4897-96D6-7E5EAC39BDF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

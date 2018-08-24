@@ -14,7 +14,7 @@ namespace Whiteboard
     {
         static void Main(string[] args)
         {
-            var directory = Directory.GetCurrentDirectory();
+            var directory = ".";
             while (!Directory.Exists(Path.Combine(directory, "demo")))
             {
                 directory = Path.Combine(directory, "..");
@@ -155,6 +155,15 @@ namespace Whiteboard
         {
             Console.WriteLine(fileName);
 
+            var meta = new OCR.Shared.ImageInfo
+            {
+                FileName = fileName,
+                MaskName = fileName + ".bw.png",
+                FilteredName = fileName + ".filtered.png",
+                Words = new List<OCR.Shared.Blob>(),
+                Areas = new List<OCR.Shared.Rect>()
+            };
+
             using (var img = System.Drawing.Image.FromFile(fileName))
             using (var bmp = new Bitmap(img))
             {
@@ -167,45 +176,64 @@ namespace Whiteboard
 
                 var bw = new FiltersSequence(new BradleyLocalThresholding { PixelBrightnessDifferenceLimit = 0.20f }, new Invert(), new Dilation(), new BlobsFiltering(5, 5, gray.Width / 2, gray.Height / 2, false))
                     .Apply(gray);
-                bw.ToManagedImage().Save(fileName + ".bw.png", System.Drawing.Imaging.ImageFormat.Png);
+                bw.ToManagedImage().Save(meta.MaskName, System.Drawing.Imaging.ImageFormat.Png);
 
-                List<int> width = new List<int>();
-                List<int> height = new List<int>();
-                foreach (Rectangle rect in new BlobCounter(bw).GetObjectsRectangles())
-                {
-                    width.Add(rect.Width);
-                    height.Add(rect.Height);
-                }
-
-                width.Sort();
-                height.Sort();
-
-                var medianWidth = width[width.Count / 2];
-                var medianHeight = height[height.Count / 2];
-                Console.WriteLine($"Median: {medianWidth}, {medianHeight}");
-
-                
                 gray = new FiltersSequence(new Invert(), new Intersect(bw), new Invert())
                     .Apply(gray);
-                gray.ToManagedImage().Save(fileName + ".filtered.png", System.Drawing.Imaging.ImageFormat.Png);
+
+                var graybmp = gray.ToManagedImage();
+                graybmp.Save(meta.FilteredName, System.Drawing.Imaging.ImageFormat.Png);
+
+                var rgb = new GrayscaleToRGB().Apply(gray);
+
+                foreach (var blob in new BlobCounter(bw).GetObjects(bw, false))
+                {
+                    var gravityCenter = new OCR.Shared.Point { X = (int)blob.CenterOfGravity.X, Y = (int)blob.CenterOfGravity.Y };
+                    var geometryCenter = new OCR.Shared.Point { X = blob.Rectangle.X + blob.Rectangle.Width / 2, Y = blob.Rectangle.Y + blob.Rectangle.Height / 2 };
+
+                    Drawing.Rectangle(rgb, blob.Rectangle, Color.Blue);
+
+                    Drawing.FillRectangle(rgb, new Rectangle(geometryCenter.X - 2, geometryCenter.Y - 2, 5, 5), Color.Magenta);
+                    Drawing.FillRectangle(rgb, new Rectangle(gravityCenter.X - 2, gravityCenter.Y - 2, 5, 5), Color.Cyan);
+
+                    var bits = graybmp.LockBits(blob.Rectangle, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
+
+                    meta.Words.Add(
+                        new OCR.Shared.Blob
+                        {
+                            Data = new FiltersSequence(new Invert(), new Intersect(blob.Image), new Invert()).Apply(new UnmanagedImage(bits)).ToByteArray(),
+                            Position = new OCR.Shared.Rect { X = blob.Rectangle.X, Y = blob.Rectangle.Y, W = blob.Rectangle.Width, H = blob.Rectangle.Height },
+                            GravityCenter = gravityCenter,
+                            GeometryCenter = geometryCenter
+                        });
+
+                    graybmp.UnlockBits(bits);
+                }
+
+                var sortedw = meta.Words.Select(p => p.Position.W).OrderBy(p => p).ToArray();
+                var sortedh = meta.Words.Select(p => p.Position.H).OrderBy(p => p).ToArray();
+
+                meta.MedianWordSize = new OCR.Shared.Point { X = sortedw[sortedw.Length / 2], Y = sortedh[sortedh.Length / 2] };
+
+                Console.WriteLine($"Median: {meta.MedianWordSize.X}, {meta.MedianWordSize.Y}");
                 
-                bw = new FiltersSequence(new HorizontalRunLengthSmoothing(medianWidth * 2), new VerticalRunLengthSmoothing(medianHeight * 2))
+                bw = new FiltersSequence(new HorizontalRunLengthSmoothing(meta.MedianWordSize.X * 2), new VerticalRunLengthSmoothing(meta.MedianWordSize.Y * 2))
                     .Apply(bw);
                 bw.ToManagedImage().Save(fileName + ".area.png", System.Drawing.Imaging.ImageFormat.Png);
 
                 foreach (Rectangle rect in new BlobCounter(bw).GetObjectsRectangles()) Drawing.FillRectangle(bw, rect, Color.White);
                 bw.ToManagedImage().Save(fileName + ".rect.png", System.Drawing.Imaging.ImageFormat.Png);
 
-                var rgb = new GrayscaleToRGB().Apply(gray);
-
-                var padding = (medianWidth + medianHeight) / 2 / 2;
+                
                 foreach (Rectangle rect in new BlobCounter(bw).GetObjectsRectangles())
                 {
+                    meta.Areas.Add(new OCR.Shared.Rect { X = rect.X, Y = rect.Y, W = rect.Width, H = rect.Height });
                     Drawing.Rectangle(rgb, rect, Color.Red);
                 }
 
                 rgb.ToManagedImage().Save(fileName + ".marked.png", System.Drawing.Imaging.ImageFormat.Png);
 
+                File.WriteAllText(fileName + ".meta.json", Newtonsoft.Json.JsonConvert.SerializeObject(meta, Newtonsoft.Json.Formatting.Indented));
             }
 
         }
