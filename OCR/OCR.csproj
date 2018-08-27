@@ -125,12 +125,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoundingBox.cs" />
+    <Compile Include="ChineseSegment.cs" />
     <Compile Include="Equation.cs" />
     <Compile Include="GoogleOcr.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="OcrResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Segment.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>

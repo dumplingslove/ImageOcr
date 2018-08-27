@@ -8,18 +8,24 @@ namespace OCR
 {
     public class OcrResult
     {
-        public enum OcrResultType
+        public class OcrSegmentResult
         {
-            ChineseSegment,
-            Equation,
+            public enum OcrResultType
+            {
+                ChineseSegment,
+                Equation,
+            }
+
+            public int Index { get; set; }
+
+            public OcrResultType Type { get; set; }
+
+            public Segment Segment { get; set; }
         }
 
-        public int Index { get; set; }
-
-        public OcrResultType Type { get; set; }
-
-        public string ChineseSegment { get; set; }
-
-        public Equation Equation { get; set; }
+        public class OcrLineResult
+        {
+            public List<OcrSegmentResult> Segments { get; set; }
+        }
     }
 }
