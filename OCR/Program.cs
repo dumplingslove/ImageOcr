@@ -24,7 +24,9 @@ namespace OCR
             //var imageName = "Chinese.jpg";
             //var imageName = "PrintWithHandWriting.jpg";
             //var imageName = "4.input.jpg.filtered.png";
-            var imageName = "4.input.jpg.block2.png";
+            //var imageName = "4.input.jpg.block1.png";
+            //var imageName = "4.input.jpg.block2.png";
+            var imageName = "4.input.jpg.block3.png";
 
             var inputPath = Path.Combine(directory, "Picture", imageName);
             var outputFolder = Path.Combine(directory, "Output");
